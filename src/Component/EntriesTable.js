@@ -2,11 +2,15 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
-  IconButton, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button
+  IconButton, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, Box
 } from '@mui/material';
-import { Delete, Edit } from '@mui/icons-material';
+import { Delete, Edit, Add } from '@mui/icons-material';
 import { styled } from '@mui/system';
 import { BASE_URL } from '../constant';
+import AddEntry from './AddEntry';
+import AddAttribute from './AddAttribute';
+import DeleteAttribute from './DeleteAttribute';
+import UpdateAttribute from './UpdateAttribute';
 
 const EditForm = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -15,13 +19,19 @@ const EditForm = styled('div')(({ theme }) => ({
   padding: theme.spacing(2),
 }));
 
-const EntriesTable = ({ entityName }) => {
+const ShowEntity = () => {
+  const [entityName, setEntityName] = useState('');
   const [entries, setEntries] = useState([]);
+  const [attributes, setAttributes] = useState([]);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [addEntryDialogOpen, setAddEntryDialogOpen] = useState(false);
   const [currentEntry, setCurrentEntry] = useState(null);
 
   useEffect(() => {
-    fetchEntries();
+    if (entityName) {
+      fetchEntries();
+      fetchAttributes();
+    }
   }, [entityName]);
 
   const fetchEntries = async () => {
@@ -30,6 +40,15 @@ const EntriesTable = ({ entityName }) => {
       setEntries(response.data);
     } catch (error) {
       console.error('Error fetching entries:', error);
+    }
+  };
+
+  const fetchAttributes = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}entities/${entityName}`);
+      setAttributes(response.data.attributes);
+    } catch (error) {
+      console.error('Error fetching attributes:', error);
     }
   };
 
@@ -66,34 +85,66 @@ const EntriesTable = ({ entityName }) => {
     setCurrentEntry({ ...currentEntry, [field]: value });
   };
 
+  const handleAddEntryOpen = () => {
+    setAddEntryDialogOpen(true);
+  };
+
+  const handleAddEntryClose = () => {
+    setAddEntryDialogOpen(false);
+  };
+
   return (
     <div>
-      <TableContainer component={Paper}>
+      <TextField
+        label="Entity Name"
+        value={entityName}
+        onChange={(e) => setEntityName(e.target.value)}
+        fullWidth
+        margin="normal"
+      />
+      <Box sx={{ display: "flex", gap: 2, marginTop: 2 }}>
+        <Button variant="contained" color="primary" onClick={handleAddEntryOpen}>
+          Add Entry
+        </Button>
+        <AddAttribute entityName={entityName} />
+        <DeleteAttribute entityName={entityName} />
+        <UpdateAttribute entityName={entityName} />
+      </Box>
+      <TableContainer component={Paper} sx={{ marginTop: 2 }}>
         <Table>
           <TableHead>
             <TableRow>
-              {entries.length > 0 && Object.keys(entries[0]).map((key) => (
-                <TableCell key={key}>{key}</TableCell>
+              {attributes.map((attr) => (
+                <TableCell key={attr.name}>{attr.name}</TableCell>
               ))}
               <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {entries.map((entry) => (
-              <TableRow key={entry.id}>
-                {Object.keys(entry).map((key) => (
-                  <TableCell key={key}>{entry[key]}</TableCell>
+            {entries.length > 0 ? (
+              entries.map((entry) => (
+                <TableRow key={entry.id}>
+                  {attributes.map((attr) => (
+                    <TableCell key={attr.name}>{entry[attr.name]}</TableCell>
+                  ))}
+                  <TableCell>
+                    <IconButton onClick={() => handleEditOpen(entry)}>
+                      <Edit />
+                    </IconButton>
+                    <IconButton onClick={() => handleDelete(entry.id)}>
+                      <Delete />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                {attributes.map((attr) => (
+                  <TableCell key={attr.name}></TableCell>
                 ))}
-                <TableCell>
-                  <IconButton onClick={() => handleEditOpen(entry)}>
-                    <Edit />
-                  </IconButton>
-                  <IconButton onClick={() => handleDelete(entry.id)}>
-                    <Delete />
-                  </IconButton>
-                </TableCell>
+                <TableCell></TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </TableContainer>
@@ -119,8 +170,23 @@ const EntriesTable = ({ entityName }) => {
           <Button onClick={handleEditSave}>Save</Button>
         </DialogActions>
       </Dialog>
+
+      <Dialog open={addEntryDialogOpen} onClose={handleAddEntryClose}>
+        <DialogTitle>Add Entry</DialogTitle>
+        <DialogContent>
+          <AddEntry
+            entityName={entityName}
+            attributes={attributes}
+            onClose={handleAddEntryClose}
+            onAdd={fetchEntries}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleAddEntryClose}>Cancel</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
 
-export default EntriesTable;
+export default ShowEntity;
