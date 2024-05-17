@@ -27,10 +27,15 @@ const FormContainer = styled(Container)(({ theme }) => ({
 const CreateEntity = () => {
   const theme = useTheme();
   const [entityName, setEntityName] = useState("");
-  const [attributes, setAttributes] = useState([{ name: "", type: "text" , isRequired : "YES"}]);
+  const [attributes, setAttributes] = useState([
+    { name: "", type: "text", isRequired: "YES" },
+  ]);
 
   const handleAddAttribute = () => {
-    setAttributes([...attributes, { name: "", type: "text" , isRequired : "YES" }]);
+    setAttributes([
+      ...attributes,
+      { name: "", type: "text", isRequired: "YES" },
+    ]);
   };
 
   const handleChangeAttribute = (index, field, value) => {
@@ -100,7 +105,6 @@ const CreateEntity = () => {
                 <MenuItem value="text">Text</MenuItem>
                 <MenuItem value="bigint">BigInt</MenuItem>
                 <MenuItem value="date">Date</MenuItem>
-                <MenuItem value="serial">Serial</MenuItem>
                 <MenuItem value="int">Int</MenuItem>
               </Select>
             </FormControl>
