@@ -29,7 +29,7 @@ const AddAttribute = ({ entityName }) => {
 
   return (
     <>
-      <Button variant="contained" color="primary" onClick={handleOpen}>
+      <Button variant="contained" color="warning" onClick={handleOpen}>
         Add Attribute
       </Button>
       <Dialog open={open} onClose={handleClose}>

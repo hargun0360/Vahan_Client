@@ -1,26 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import {
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
-  IconButton, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, Box
-} from '@mui/material';
-import { Delete, Edit, Add } from '@mui/icons-material';
-import { styled } from '@mui/system';
-import { BASE_URL } from '../constant';
-import AddEntry from './AddEntry';
-import AddAttribute from './AddAttribute';
-import DeleteAttribute from './DeleteAttribute';
-import UpdateAttribute from './UpdateAttribute';
-
-const EditForm = styled('div')(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: theme.spacing(2),
-  padding: theme.spacing(2),
-}));
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  IconButton,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+  Button,
+  Box,
+} from "@mui/material";
+import { Delete, Edit } from "@mui/icons-material";
+import { BASE_URL } from "../constant";
+import AddEntry from "./AddEntry";
+import AddAttribute from "./AddAttribute";
+import DeleteAttribute from "./DeleteAttribute";
+import UpdateAttribute from "./UpdateAttribute";
 
 const ShowEntity = () => {
-  const [entityName, setEntityName] = useState('');
+  const [entityName, setEntityName] = useState("");
   const [entries, setEntries] = useState([]);
   const [attributes, setAttributes] = useState([]);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -29,35 +34,26 @@ const ShowEntity = () => {
 
   useEffect(() => {
     if (entityName) {
-      fetchEntries();
-      fetchAttributes();
+      fetchEntriesAndAttributes();
     }
   }, [entityName]);
 
-  const fetchEntries = async () => {
+  const fetchEntriesAndAttributes = async () => {
     try {
       const response = await axios.get(`${BASE_URL}${entityName}`);
-      setEntries(response.data);
-    } catch (error) {
-      console.error('Error fetching entries:', error);
-    }
-  };
-
-  const fetchAttributes = async () => {
-    try {
-      const response = await axios.get(`${BASE_URL}entities/${entityName}`);
+      setEntries(response.data.entries);
       setAttributes(response.data.attributes);
     } catch (error) {
-      console.error('Error fetching attributes:', error);
+      console.error("Error fetching entries and attributes:", error);
     }
   };
 
   const handleDelete = async (id) => {
     try {
       await axios.delete(`${BASE_URL}${entityName}/${id}`);
-      fetchEntries();
+      fetchEntriesAndAttributes();
     } catch (error) {
-      console.error('Error deleting entry:', error);
+      console.error("Error deleting entry:", error);
     }
   };
 
@@ -74,10 +70,10 @@ const ShowEntity = () => {
   const handleEditSave = async () => {
     try {
       await axios.put(`${BASE_URL}${entityName}/${currentEntry.id}`, currentEntry);
-      fetchEntries();
+      fetchEntriesAndAttributes();
       handleEditClose();
     } catch (error) {
-      console.error('Error updating entry:', error);
+      console.error("Error updating entry:", error);
     }
   };
 
@@ -152,18 +148,20 @@ const ShowEntity = () => {
       <Dialog open={editDialogOpen} onClose={handleEditClose}>
         <DialogTitle>Edit Entry</DialogTitle>
         <DialogContent>
-          {currentEntry && Object.keys(currentEntry).map((key) => (
-            key !== 'id' && (
-              <TextField
-                key={key}
-                label={key}
-                value={currentEntry[key]}
-                onChange={(e) => handleChange(key, e.target.value)}
-                fullWidth
-                margin="dense"
-              />
-            )
-          ))}
+          {currentEntry &&
+            Object.keys(currentEntry).map(
+              (key) =>
+                key !== "id" && (
+                  <TextField
+                    key={key}
+                    label={key}
+                    value={currentEntry[key]}
+                    onChange={(e) => handleChange(key, e.target.value)}
+                    fullWidth
+                    margin="dense"
+                  />
+                )
+            )}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleEditClose}>Cancel</Button>
@@ -178,7 +176,7 @@ const ShowEntity = () => {
             entityName={entityName}
             attributes={attributes}
             onClose={handleAddEntryClose}
-            onAdd={fetchEntries}
+            onAdd={fetchEntriesAndAttributes}
           />
         </DialogContent>
         <DialogActions>

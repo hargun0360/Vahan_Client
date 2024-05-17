@@ -32,7 +32,7 @@ const UpdateAttribute = ({ entityName }) => {
 
   return (
     <>
-      <Button variant="contained" color="default" onClick={handleOpen}>
+      <Button variant="contained" color="success" onClick={handleOpen}>
         Update Attribute
       </Button>
       <Dialog open={open} onClose={handleClose}>

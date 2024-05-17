@@ -25,7 +25,7 @@ const DeleteAttribute = ({ entityName }) => {
 
   return (
     <>
-      <Button variant="contained" color="secondary" onClick={handleOpen}>
+      <Button variant="contained" color="error" onClick={handleOpen}>
         Delete Attribute
       </Button>
       <Dialog open={open} onClose={handleClose}>

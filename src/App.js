@@ -7,15 +7,17 @@ import ShowEntity from "./Component/EntriesTable";
 
 function App() {
   return (
-    <Router>
-      <Navbar />
-      <Container>
-        <Routes>
-          <Route path="/" element={<CreateEntity />} />
-          <Route path="/show-entity" element={<ShowEntity />} />
-        </Routes>
-      </Container>
-    </Router>
+
+      <Router>
+        <Navbar />
+        <Container>
+          <Routes>
+            <Route path="/" element={<CreateEntity />} />
+            <Route path="/show-entity" element={<ShowEntity />} />
+          </Routes>
+        </Container>
+      </Router>
+    
   );
 }
 

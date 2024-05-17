@@ -24,7 +24,7 @@ const AddEntry = ({ entityName, attributes, onClose, onAdd }) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      {attributes.map((attr, index) => (
+      {attributes?.map((attr, index) => (
         <Box key={index} sx={{ marginBottom: 2 }}>
           <TextField
             label={attr.name}
