@@ -27,10 +27,10 @@ const FormContainer = styled(Container)(({ theme }) => ({
 const CreateEntity = () => {
   const theme = useTheme();
   const [entityName, setEntityName] = useState("");
-  const [attributes, setAttributes] = useState([{ name: "", type: "text" }]);
+  const [attributes, setAttributes] = useState([{ name: "", type: "text" , isRequired : "YES"}]);
 
   const handleAddAttribute = () => {
-    setAttributes([...attributes, { name: "", type: "text" }]);
+    setAttributes([...attributes, { name: "", type: "text" , isRequired : "YES" }]);
   };
 
   const handleChangeAttribute = (index, field, value) => {
@@ -104,7 +104,28 @@ const CreateEntity = () => {
                 <MenuItem value="int">Int</MenuItem>
               </Select>
             </FormControl>
-            {index !== 0 && (
+            <FormControl fullWidth margin="normal">
+              <InputLabel>Is Required</InputLabel>
+              <Select
+                value={attr.isRequired}
+                onChange={(e) =>
+                  handleChangeAttribute(index, "YES", e.target.value)
+                }
+                label="Is Required"
+              >
+                <MenuItem value="YES">YES</MenuItem>
+                <MenuItem value="NO">NO</MenuItem>
+              </Select>
+            </FormControl>
+            {index == 0 ? (
+              <IconButton
+                onClick={() => handleRemoveAttribute(index)}
+                color="secondary"
+                sx={{ visibility: "hidden" }}
+              >
+                <Close />
+              </IconButton>
+            ) : (
               <IconButton
                 onClick={() => handleRemoveAttribute(index)}
                 color="secondary"
@@ -114,17 +135,26 @@ const CreateEntity = () => {
             )}
           </Box>
         ))}
-        <Button
-          type="button"
-          onClick={handleAddAttribute}
-          variant="outlined"
-          sx={{ marginBottom: theme.spacing(2) }}
+        <div
+          style={{
+            display: "flex",
+            width: "100%",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
         >
-          Add Attribute
-        </Button>
-        <Button type="submit" variant="contained" color="primary">
-          Create Entity
-        </Button>
+          <Button
+            type="button"
+            onClick={handleAddAttribute}
+            variant="outlined"
+            sx={{ marginBottom: theme.spacing(2) }}
+          >
+            Add Attribute
+          </Button>
+          <Button type="submit" variant="contained" color="primary">
+            Create Entity
+          </Button>
+        </div>
       </form>
     </FormContainer>
   );
