@@ -111,9 +111,9 @@ const ShowEntity = () => {
           <TableHead>
             <TableRow>
               {attributes?.map((attr) => (
-                <TableCell key={attr.name}>{attr.name}</TableCell>
+                <TableCell key={attr.name} sx={{fontWeight : 'Bold'}}>{attr.name}</TableCell>
               ))}
-              <TableCell>Actions</TableCell>
+              <TableCell sx={{fontWeight : 'Bold'}}>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
