@@ -110,7 +110,7 @@ const ShowEntity = () => {
         <Table>
           <TableHead>
             <TableRow>
-              {attributes.map((attr) => (
+              {attributes?.map((attr) => (
                 <TableCell key={attr.name}>{attr.name}</TableCell>
               ))}
               <TableCell>Actions</TableCell>
@@ -118,9 +118,9 @@ const ShowEntity = () => {
           </TableHead>
           <TableBody>
             {entries.length > 0 ? (
-              entries.map((entry) => (
+              entries?.map((entry) => (
                 <TableRow key={entry.id}>
-                  {attributes.map((attr) => (
+                  {attributes?.map((attr) => (
                     <TableCell key={attr.name}>{entry[attr.name]}</TableCell>
                   ))}
                   <TableCell>
@@ -135,7 +135,7 @@ const ShowEntity = () => {
               ))
             ) : (
               <TableRow>
-                {attributes.map((attr) => (
+                {attributes?.map((attr) => (
                   <TableCell key={attr.name}></TableCell>
                 ))}
                 <TableCell></TableCell>
@@ -149,7 +149,7 @@ const ShowEntity = () => {
         <DialogTitle>Edit Entry</DialogTitle>
         <DialogContent>
           {currentEntry &&
-            Object.keys(currentEntry).map(
+            Object.keys(currentEntry)?.map(
               (key) =>
                 key !== "id" && (
                   <TextField
