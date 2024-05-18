@@ -1,22 +1,42 @@
 import React, { useState, useEffect } from "react";
-import { TextField, Button, Box, Dialog, DialogContent, DialogTitle, DialogActions } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Box,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogActions,
+} from "@mui/material";
 import axios from "axios";
 import { BASE_URL } from "../constant";
 import moment from "moment";
 
-const AddEntry = ({ open, onClose, entityName, attributes, onAdd, initialData }) => {
+
+const AddEntry = ({
+  open,
+  onClose,
+  entityName,
+  attributes,
+  onAdd,
+  initialData,
+}) => {
   const [entry, setEntry] = useState({});
 
   useEffect(() => {
     if (initialData) {
       // Format the date fields
       const formattedData = { ...initialData };
-      attributes.forEach(attr => {
-        if (attr.type === 'date' && initialData[attr.name]) {
-          formattedData[attr.name] = moment(initialData[attr.name]).format('YYYY-MM-DD');
+      attributes.forEach((attr) => {
+        if (attr.type === "date" && initialData[attr.name]) {
+          formattedData[attr.name] = moment(initialData[attr.name]).format(
+            "YYYY-MM-DD"
+          );
         }
       });
       setEntry(formattedData);
+    }else{
+      setEntry({});
     }
   }, [initialData, attributes]);
 
@@ -49,10 +69,16 @@ const AddEntry = ({ open, onClose, entityName, attributes, onAdd, initialData })
               {attr.name !== "id" && (
                 <TextField
                   label={attr.name}
-                  type={attr.type === "date" ? "date" : attr.type === "integer" ? "number" : "text"}
-                  value={initialData ? entry[attr.name] : ""}
+                  type={
+                    attr.type === "date"
+                      ? "date"
+                      : attr.type === "integer"
+                      ? "number"
+                      : "text"
+                  }
+                  value={entry[attr.name] || ""}
                   onChange={(e) => handleChange(attr.name, e.target.value)}
-                  fullWidth 
+                  fullWidth
                   margin="normal"
                   InputLabelProps={attr.type === "date" ? { shrink: true } : {}}
                   required={attr.isRequired === "YES"}

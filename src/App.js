@@ -1,23 +1,21 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { Container, Typography } from "@mui/material";
+import { Container } from "@mui/material";
 import Navbar from "./Component/Navbar";
 import CreateEntity from "./Component/CreateEntity";
 import ShowEntity from "./Component/EntriesTable";
 
 function App() {
   return (
-
-      <Router>
-        <Navbar />
-        <Container>
-          <Routes>
-            <Route path="/" element={<CreateEntity />} />
-            <Route path="/show-entity" element={<ShowEntity />} />
-          </Routes>
-        </Container>
-      </Router>
-    
+    <Router>
+      <Navbar />
+      <Container>
+        <Routes>
+          <Route path="/" element={<CreateEntity />} />
+          <Route path="/show-entity" element={<ShowEntity />} />
+        </Routes>
+      </Container>
+    </Router>
   );
 }
 
