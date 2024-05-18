@@ -36,7 +36,7 @@ const AddAttribute = ({ entityName, onAttributeAdded }) => {
         attribute: { name, type, isRequired },
       });
       handleClose();
-      onAttributeAdded(); // Call the callback after successful attribute addition
+      onAttributeAdded(); 
     } catch (error) {
       alert(error.response.data.message);
     }

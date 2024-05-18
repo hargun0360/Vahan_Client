@@ -141,11 +141,11 @@ const ShowEntity = () => {
                   {attributes.map((attr) => (
                     <TableCell key={attr.name}>{entry[attr.name]}</TableCell>
                   ))}
-                  <TableCell>
-                    <IconButton onClick={() => handleEntryDialogOpen(entry)}>
+                  <TableCell sx={{display : "flex"}}>
+                    <IconButton color="primary"  onClick={() => handleEntryDialogOpen(entry)}>
                       <Edit />
                     </IconButton>
-                    <IconButton onClick={() => handleDelete(entry.id)}>
+                    <IconButton color="error" onClick={() => handleDelete(entry.id)}>
                       <Delete />
                     </IconButton>
                   </TableCell>
