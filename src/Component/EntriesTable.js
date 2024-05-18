@@ -20,33 +20,61 @@ import AddAttribute from "./AddAttribute";
 import DeleteAttribute from "./DeleteAttribute";
 import UpdateAttribute from "./UpdateAttribute";
 
+const debounce = (func, delay) => {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      func(...args);
+    }, delay);
+  };
+};
+
 const ShowEntity = () => {
   const [entityName, setEntityName] = useState("");
   const [entries, setEntries] = useState([]);
   const [attributes, setAttributes] = useState([]);
   const [entryDialogOpen, setEntryDialogOpen] = useState(false);
   const [currentEntry, setCurrentEntry] = useState(null);
+  const [abortController, setAbortController] = useState(null);
 
-  useEffect(() => {
-    if (entityName) {
-      fetchEntriesAndAttributes();
+  const fetchEntriesAndAttributes = async (name) => {
+    if (abortController) {
+      abortController.abort();
     }
-  }, [entityName]);
+    const newAbortController = new AbortController();
+    setAbortController(newAbortController);
 
-  const fetchEntriesAndAttributes = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}${entityName}`);
+      const response = await axios.get(`${BASE_URL}${name}`, {
+        signal: newAbortController.signal,
+      });
       setEntries(response.data.entries);
       setAttributes(response.data.attributes);
     } catch (error) {
-      console.error("Error fetching entries and attributes:", error);
+      if (axios.isCancel(error)) {
+        console.log("Request canceled", error.message);
+      } else {
+        console.error("Error fetching entries and attributes:", error);
+      }
     }
   };
+
+  const debouncedFetchEntriesAndAttributes = debounce(
+    fetchEntriesAndAttributes,
+    500
+  );
+
+  useEffect(() => {
+    if (entityName) {
+      debouncedFetchEntriesAndAttributes(entityName);
+    }
+  }, [entityName]);
 
   const handleDelete = async (id) => {
     try {
       await axios.delete(`${BASE_URL}${entityName}/${id}`);
-      fetchEntriesAndAttributes();
+      fetchEntriesAndAttributes(entityName);
     } catch (error) {
       console.error("Error deleting entry:", error);
     }
@@ -62,17 +90,25 @@ const ShowEntity = () => {
     setCurrentEntry(null);
   };
 
+  const handleEntityNameChange = (e) => {
+    setEntityName(e.target.value);
+  };
+
   return (
     <div>
       <TextField
         label="Entity Name"
         value={entityName}
-        onChange={(e) => setEntityName(e.target.value)}
+        onChange={handleEntityNameChange}
         fullWidth
         margin="normal"
       />
       <Box sx={{ display: "flex", gap: 2, marginTop: 2 }}>
-        <Button variant="contained" color="primary" onClick={() => handleEntryDialogOpen()}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => handleEntryDialogOpen()}
+        >
           Add Entry
         </Button>
         <AddAttribute entityName={entityName} />
@@ -86,7 +122,7 @@ const ShowEntity = () => {
               {attributes.map((attr) => (
                 <TableCell key={attr.name}>{attr.name}</TableCell>
               ))}
-             {attributes.length ?  <TableCell>Actions</TableCell> : null}
+              {attributes.length ? <TableCell>Actions</TableCell> : null}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -123,7 +159,7 @@ const ShowEntity = () => {
         onClose={handleEntryDialogClose}
         entityName={entityName}
         attributes={attributes}
-        onAdd={fetchEntriesAndAttributes}
+        onAdd={() => fetchEntriesAndAttributes(entityName)}
         initialData={currentEntry}
       />
     </div>
