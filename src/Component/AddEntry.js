@@ -1,10 +1,24 @@
-import React, { useState } from "react";
-import { TextField, Button, Box } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { TextField, Button, Box, Dialog, DialogContent, DialogTitle, DialogActions } from "@mui/material";
 import axios from "axios";
 import { BASE_URL } from "../constant";
+import moment from "moment";
 
-const AddEntry = ({ entityName, attributes, onClose, onAdd }) => {
+const AddEntry = ({ open, onClose, entityName, attributes, onAdd, initialData }) => {
   const [entry, setEntry] = useState({});
+
+  useEffect(() => {
+    if (initialData) {
+      // Format the date fields
+      const formattedData = { ...initialData };
+      attributes.forEach(attr => {
+        if (attr.type === 'date' && initialData[attr.name]) {
+          formattedData[attr.name] = moment(initialData[attr.name]).format('YYYY-MM-DD');
+        }
+      });
+      setEntry(formattedData);
+    }
+  }, [initialData, attributes]);
 
   const handleChange = (name, value) => {
     setEntry({ ...entry, [name]: value });
@@ -13,8 +27,11 @@ const AddEntry = ({ entityName, attributes, onClose, onAdd }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${BASE_URL}${entityName}`, entry);
-      alert(response.data.message);
+      if (initialData) {
+        await axios.put(`${BASE_URL}${entityName}/${entry.id}`, entry);
+      } else {
+        await axios.post(`${BASE_URL}${entityName}`, entry);
+      }
       onAdd();
       onClose();
     } catch (error) {
@@ -23,25 +40,37 @@ const AddEntry = ({ entityName, attributes, onClose, onAdd }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      {attributes?.map((attr, index) => (
-        <Box key={index} sx={{ marginBottom: 2 }}>
-          <TextField
-            label={attr.name}
-            type={attr.type === "date" ? "date" : "text"}
-            value={entry[attr.name] || ""}
-            onChange={(e) => handleChange(attr.name, e.target.value)}
-            fullWidth
-            margin="normal"
-            InputLabelProps={attr.type === "date" ? { shrink: true } : {}}
-            required={attr.isRequired === "YES"}
-          />
-        </Box>
-      ))}
-      <Button type="submit" variant="contained" color="primary">
-        Add Entry
-      </Button>
-    </form>
+    <Dialog open={open} onClose={onClose} fullWidth>
+      <DialogTitle>{initialData ? "Edit Entry" : "Add Entry"}</DialogTitle>
+      <DialogContent>
+        <form onSubmit={handleSubmit}>
+          {attributes?.map((attr, index) => (
+            <Box key={index} sx={{ marginBottom: 2, width: "100%" }}>
+              {attr.name !== "id" && (
+                <TextField
+                  label={attr.name}
+                  type={attr.type === "date" ? "date" : attr.type === "integer" ? "number" : "text"}
+                  value={initialData ? entry[attr.name] : ""}
+                  onChange={(e) => handleChange(attr.name, e.target.value)}
+                  fullWidth 
+                  margin="normal"
+                  InputLabelProps={attr.type === "date" ? { shrink: true } : {}}
+                  required={attr.isRequired === "YES"}
+                />
+              )}
+            </Box>
+          ))}
+          <DialogActions>
+            <Button onClick={onClose} color="secondary">
+              Cancel
+            </Button>
+            <Button type="submit" variant="contained" color="primary">
+              {initialData ? "Save Changes" : "Add Entry"}
+            </Button>
+          </DialogActions>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 };
 

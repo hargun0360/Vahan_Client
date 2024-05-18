@@ -9,10 +9,6 @@ import {
   TableRow,
   Paper,
   IconButton,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   TextField,
   Button,
   Box,
@@ -28,8 +24,7 @@ const ShowEntity = () => {
   const [entityName, setEntityName] = useState("");
   const [entries, setEntries] = useState([]);
   const [attributes, setAttributes] = useState([]);
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [addEntryDialogOpen, setAddEntryDialogOpen] = useState(false);
+  const [entryDialogOpen, setEntryDialogOpen] = useState(false);
   const [currentEntry, setCurrentEntry] = useState(null);
 
   useEffect(() => {
@@ -57,36 +52,14 @@ const ShowEntity = () => {
     }
   };
 
-  const handleEditOpen = (entry) => {
+  const handleEntryDialogOpen = (entry = null) => {
     setCurrentEntry(entry);
-    setEditDialogOpen(true);
+    setEntryDialogOpen(true);
   };
 
-  const handleEditClose = () => {
-    setEditDialogOpen(false);
+  const handleEntryDialogClose = () => {
+    setEntryDialogOpen(false);
     setCurrentEntry(null);
-  };
-
-  const handleEditSave = async () => {
-    try {
-      await axios.put(`${BASE_URL}${entityName}/${currentEntry.id}`, currentEntry);
-      fetchEntriesAndAttributes();
-      handleEditClose();
-    } catch (error) {
-      console.error("Error updating entry:", error);
-    }
-  };
-
-  const handleChange = (field, value) => {
-    setCurrentEntry({ ...currentEntry, [field]: value });
-  };
-
-  const handleAddEntryOpen = () => {
-    setAddEntryDialogOpen(true);
-  };
-
-  const handleAddEntryClose = () => {
-    setAddEntryDialogOpen(false);
   };
 
   return (
@@ -99,7 +72,7 @@ const ShowEntity = () => {
         margin="normal"
       />
       <Box sx={{ display: "flex", gap: 2, marginTop: 2 }}>
-        <Button variant="contained" color="primary" onClick={handleAddEntryOpen}>
+        <Button variant="contained" color="primary" onClick={() => handleEntryDialogOpen()}>
           Add Entry
         </Button>
         <AddAttribute entityName={entityName} />
@@ -110,21 +83,21 @@ const ShowEntity = () => {
         <Table>
           <TableHead>
             <TableRow>
-              {attributes?.map((attr) => (
-                <TableCell key={attr.name} sx={{fontWeight : 'Bold'}}>{attr.name}</TableCell>
+              {attributes.map((attr) => (
+                <TableCell key={attr.name}>{attr.name}</TableCell>
               ))}
-              <TableCell sx={{fontWeight : 'Bold'}}>Actions</TableCell>
+             {attributes.length ?  <TableCell>Actions</TableCell> : null}
             </TableRow>
           </TableHead>
           <TableBody>
             {entries.length > 0 ? (
-              entries?.map((entry) => (
+              entries.map((entry) => (
                 <TableRow key={entry.id}>
-                  {attributes?.map((attr) => (
+                  {attributes.map((attr) => (
                     <TableCell key={attr.name}>{entry[attr.name]}</TableCell>
                   ))}
                   <TableCell>
-                    <IconButton onClick={() => handleEditOpen(entry)}>
+                    <IconButton onClick={() => handleEntryDialogOpen(entry)}>
                       <Edit />
                     </IconButton>
                     <IconButton onClick={() => handleDelete(entry.id)}>
@@ -135,7 +108,7 @@ const ShowEntity = () => {
               ))
             ) : (
               <TableRow>
-                {attributes?.map((attr) => (
+                {attributes.map((attr) => (
                   <TableCell key={attr.name}></TableCell>
                 ))}
                 <TableCell></TableCell>
@@ -145,44 +118,14 @@ const ShowEntity = () => {
         </Table>
       </TableContainer>
 
-      <Dialog open={editDialogOpen} onClose={handleEditClose}>
-        <DialogTitle>Edit Entry</DialogTitle>
-        <DialogContent>
-          {currentEntry &&
-            Object.keys(currentEntry)?.map(
-              (key) =>
-                key !== "id" && (
-                  <TextField
-                    key={key}
-                    label={key}
-                    value={currentEntry[key]}
-                    onChange={(e) => handleChange(key, e.target.value)}
-                    fullWidth
-                    margin="dense"
-                  />
-                )
-            )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleEditClose}>Cancel</Button>
-          <Button onClick={handleEditSave}>Save</Button>
-        </DialogActions>
-      </Dialog>
-
-      <Dialog open={addEntryDialogOpen} onClose={handleAddEntryClose}>
-        <DialogTitle>Add Entry</DialogTitle>
-        <DialogContent>
-          <AddEntry
-            entityName={entityName}
-            attributes={attributes}
-            onClose={handleAddEntryClose}
-            onAdd={fetchEntriesAndAttributes}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleAddEntryClose}>Cancel</Button>
-        </DialogActions>
-      </Dialog>
+      <AddEntry
+        open={entryDialogOpen}
+        onClose={handleEntryDialogClose}
+        entityName={entityName}
+        attributes={attributes}
+        onAdd={fetchEntriesAndAttributes}
+        initialData={currentEntry}
+      />
     </div>
   );
 };

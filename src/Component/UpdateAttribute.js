@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Button, TextField, Box, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { Button, TextField, Box, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { BASE_URL } from '../constant';
 
 const UpdateAttribute = ({ entityName }) => {
@@ -41,8 +41,30 @@ const UpdateAttribute = ({ entityName }) => {
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <TextField label="Old Name" value={oldName} onChange={(e) => setOldName(e.target.value)} fullWidth />
             <TextField label="New Name" value={newName} onChange={(e) => setNewName(e.target.value)} fullWidth />
-            <TextField label="New Type" value={newType} onChange={(e) => setNewType(e.target.value)} fullWidth />
-            <TextField label="New Is Required" value={newIsRequired} onChange={(e) => setNewIsRequired(e.target.value)} fullWidth />
+            <FormControl fullWidth margin="normal">
+              <InputLabel>New Type</InputLabel>
+              <Select
+                value={newType}
+                onChange={(e) => setNewType(e.target.value)}
+                label="New Type"
+              >
+                <MenuItem value="text">Text</MenuItem>
+                <MenuItem value="bigint">BigInt</MenuItem>
+                <MenuItem value="date">Date</MenuItem>
+                <MenuItem value="int">Int</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl fullWidth margin="normal">
+              <InputLabel>New Is Required</InputLabel>
+              <Select
+                value={newIsRequired}
+                onChange={(e) => setNewIsRequired(e.target.value)}
+                label="New Is Required"
+              >
+                <MenuItem value="YES">YES</MenuItem>
+                <MenuItem value="NO">NO</MenuItem>
+              </Select>
+            </FormControl>
           </Box>
         </DialogContent>
         <DialogActions>
