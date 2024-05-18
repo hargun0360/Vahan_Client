@@ -1,14 +1,25 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { Button, TextField, Box, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
-import { BASE_URL } from '../constant';
+import React, { useState } from "react";
+import axios from "axios";
+import {
+  Button,
+  TextField,
+  Box,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from "@mui/material";
+import { BASE_URL } from "../constant";
 
-const DeleteAttribute = ({ entityName }) => {
+const DeleteAttribute = ({ entityName, onAttributeDeleted }) => {
   const [open, setOpen] = useState(false);
-  const [attributeName, setAttributeName] = useState('');
+  const [attributeName, setAttributeName] = useState("");
 
   const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setOpen(false);
+    setAttributeName("");
+  };
 
   const handleSubmit = async () => {
     try {
@@ -17,7 +28,8 @@ const DeleteAttribute = ({ entityName }) => {
         attributeName,
       });
       handleClose();
-      setAttributeName('');
+      setAttributeName("");
+      onAttributeDeleted();
     } catch (error) {
       alert(error.response.data.message);
     }
@@ -31,8 +43,13 @@ const DeleteAttribute = ({ entityName }) => {
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Delete Attribute</DialogTitle>
         <DialogContent>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <TextField label="Attribute Name" value={attributeName} onChange={(e) => setAttributeName(e.target.value)} fullWidth />
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            <TextField
+              label="Attribute Name"
+              value={attributeName}
+              onChange={(e) => setAttributeName(e.target.value)}
+              fullWidth
+            />
           </Box>
         </DialogContent>
         <DialogActions>

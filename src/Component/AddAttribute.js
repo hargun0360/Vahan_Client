@@ -15,14 +15,19 @@ import {
 } from "@mui/material";
 import { BASE_URL } from "../constant";
 
-const AddAttribute = ({ entityName }) => {
+const AddAttribute = ({ entityName, onAttributeAdded }) => {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [type, setType] = useState("text");
   const [isRequired, setIsRequired] = useState("YES");
 
   const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setOpen(false);
+    setName("");
+    setType("text");
+    setIsRequired("YES");
+  };
 
   const handleSubmit = async () => {
     try {
@@ -31,9 +36,7 @@ const AddAttribute = ({ entityName }) => {
         attribute: { name, type, isRequired },
       });
       handleClose();
-      setName("");
-      setType("text");
-      setIsRequired("YES");
+      onAttributeAdded(); // Call the callback after successful attribute addition
     } catch (error) {
       alert(error.response.data.message);
     }

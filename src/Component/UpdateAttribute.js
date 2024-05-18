@@ -1,30 +1,53 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { Button, TextField, Box, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
-import { BASE_URL } from '../constant';
+import React, { useState } from "react";
+import axios from "axios";
+import {
+  Button,
+  TextField,
+  Box,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from "@mui/material";
+import { BASE_URL } from "../constant";
 
-const UpdateAttribute = ({ entityName }) => {
+const UpdateAttribute = ({ entityName, onAttributeUpdated }) => {
   const [open, setOpen] = useState(false);
-  const [oldName, setOldName] = useState('');
-  const [newName, setNewName] = useState('');
-  const [newType, setNewType] = useState('text');
-  const [newIsRequired, setNewIsRequired] = useState('YES');
+  const [oldName, setOldName] = useState("");
+  const [newName, setNewName] = useState("");
+  const [newType, setNewType] = useState("text");
+  const [newIsRequired, setNewIsRequired] = useState("YES");
 
   const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setOpen(false);
+    setOldName("");
+    setNewName("");
+    setNewType("text");
+    setNewIsRequired("YES");
+  };
 
   const handleSubmit = async () => {
     try {
       await axios.post(`${BASE_URL}entities/update-attribute`, {
         entityName,
         oldAttribute: { name: oldName },
-        newAttribute: { name: newName, type: newType, isRequired: newIsRequired },
+        newAttribute: {
+          name: newName,
+          type: newType,
+          isRequired: newIsRequired,
+        },
       });
       handleClose();
-      setOldName('');
-      setNewName('');
-      setNewType('text');
-      setNewIsRequired('YES');
+      setOldName("");
+      setNewName("");
+      setNewType("text");
+      setNewIsRequired("YES");
+      onAttributeUpdated();
     } catch (error) {
       alert(error.response.data.message);
     }
@@ -38,9 +61,19 @@ const UpdateAttribute = ({ entityName }) => {
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Update Attribute</DialogTitle>
         <DialogContent>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <TextField label="Old Name" value={oldName} onChange={(e) => setOldName(e.target.value)} fullWidth />
-            <TextField label="New Name" value={newName} onChange={(e) => setNewName(e.target.value)} fullWidth />
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            <TextField
+              label="Old Name"
+              value={oldName}
+              onChange={(e) => setOldName(e.target.value)}
+              fullWidth
+            />
+            <TextField
+              label="New Name"
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              fullWidth
+            />
             <FormControl fullWidth margin="normal">
               <InputLabel>New Type</InputLabel>
               <Select

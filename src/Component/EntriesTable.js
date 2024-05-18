@@ -1,4 +1,4 @@
-import React, { useState, useEffect  } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
   Table,
@@ -111,9 +111,18 @@ const ShowEntity = () => {
         >
           Add Entry
         </Button>
-        <AddAttribute entityName={entityName} />
-        <DeleteAttribute entityName={entityName} />
-        <UpdateAttribute entityName={entityName} />
+        <AddAttribute 
+          entityName={entityName} 
+          onAttributeAdded={() => fetchEntriesAndAttributes(entityName)} 
+        />
+        <DeleteAttribute 
+          entityName={entityName} 
+          onAttributeDeleted={() => fetchEntriesAndAttributes(entityName)} 
+        />
+        <UpdateAttribute 
+          entityName={entityName} 
+          onAttributeUpdated={() => fetchEntriesAndAttributes(entityName)} 
+        />
       </Box>
       <TableContainer component={Paper} sx={{ marginTop: 2 }}>
         <Table>
