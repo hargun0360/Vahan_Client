@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import Swal from "sweetalert2";
 import {
   Button,
   TextField,
@@ -11,7 +12,7 @@ import {
   FormControl,
   InputLabel,
   Select,
-  MenuItem
+  MenuItem,
 } from "@mui/material";
 import { BASE_URL } from "../constant";
 
@@ -30,16 +31,12 @@ const AddAttribute = ({ entityName, onAttributeAdded }) => {
   };
 
   const handleSubmit = async () => {
-    try {
-      await axios.post(`${BASE_URL}entities/add-attribute`, {
-        entityName,
-        attribute: { name, type, isRequired },
-      });
-      handleClose();
-      onAttributeAdded(); 
-    } catch (error) {
-      alert(error.response.data.message);
-    }
+    await axios.post(`${BASE_URL}entities/add-attribute`, {
+      entityName,
+      attribute: { name, type, isRequired },
+    });
+    handleClose();
+    onAttributeAdded();
   };
 
   return (

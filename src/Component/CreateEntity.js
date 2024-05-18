@@ -13,6 +13,7 @@ import {
   InputLabel,
   IconButton,
 } from "@mui/material";
+import Swal from 'sweetalert2';
 import { Close } from "@mui/icons-material";
 import { BASE_URL } from "../constant";
 import { createTheme } from "@mui/material";
@@ -52,9 +53,9 @@ const CreateEntity = () => {
         entityName,
         attributes,
       });
-      alert(response.data.message);
+      Swal.fire('Success', response.data.message, 'success');
     } catch (error) {
-      alert(error.response.data.message);
+      Swal.fire('Error', error.response.data.message, 'error');
     }
   };
 
@@ -112,7 +113,7 @@ const CreateEntity = () => {
                 <Select
                   value={attr.isRequired}
                   onChange={(e) =>
-                    handleChangeAttribute(index, "YES", e.target.value)
+                    handleChangeAttribute(index, "isRequired", e.target.value)
                   }
                   label="Is Required"
                 >

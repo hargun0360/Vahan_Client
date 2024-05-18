@@ -12,8 +12,10 @@ import {
   TextField,
   Button,
   Box,
+  CircularProgress
 } from "@mui/material";
 import { Delete, Edit } from "@mui/icons-material";
+import Swal from 'sweetalert2';
 import { BASE_URL } from "../constant";
 import AddEntry from "./AddEntry";
 import AddAttribute from "./AddAttribute";
@@ -34,6 +36,7 @@ const ShowEntity = () => {
   const [entityName, setEntityName] = useState("");
   const [entries, setEntries] = useState([]);
   const [attributes, setAttributes] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [entryDialogOpen, setEntryDialogOpen] = useState(false);
   const [currentEntry, setCurrentEntry] = useState(null);
   const [abortController, setAbortController] = useState(null);
@@ -46,16 +49,17 @@ const ShowEntity = () => {
     setAbortController(newAbortController);
 
     try {
+      setLoading(true);
       const response = await axios.get(`${BASE_URL}${name}`, {
         signal: newAbortController.signal,
       });
       setEntries(response.data.entries);
       setAttributes(response.data.attributes);
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
       if (axios.isCancel(error)) {
         console.log("Request canceled", error.message);
-      } else {
-        console.error("Error fetching entries and attributes:", error);
       }
     }
   };
@@ -72,17 +76,40 @@ const ShowEntity = () => {
   }, [entityName]);
 
   const handleDelete = async (id) => {
-    try {
-      await axios.delete(`${BASE_URL}${entityName}/${id}`);
-      fetchEntriesAndAttributes(entityName);
-    } catch (error) {
-      console.error("Error deleting entry:", error);
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you want to delete this entry?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'No, keep it'
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await axios.delete(`${BASE_URL}${entityName}/${id}`);
+        fetchEntriesAndAttributes(entityName);
+        Swal.fire('Deleted!', 'Entry has been deleted.', 'success');
+      } catch (error) {
+        Swal.fire('Error', 'Failed to delete entry', 'error');
+      }
     }
   };
 
-  const handleEntryDialogOpen = (entry = null) => {
-    setCurrentEntry(entry);
-    setEntryDialogOpen(true);
+  const handleEntryDialogOpen = async (entry = null) => {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: !entry ?  'Do you want to add entry?' : 'Do you want to modify this entry?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: !entry ? 'Yes, Add' : 'Yes, modify it!',
+      cancelButtonText: !entry ? 'No' : 'No, keep it'
+    });
+
+    if (result.isConfirmed) {
+      setCurrentEntry(entry);
+      setEntryDialogOpen(true);
+    }
   };
 
   const handleEntryDialogClose = () => {
@@ -124,44 +151,50 @@ const ShowEntity = () => {
           onAttributeUpdated={() => fetchEntriesAndAttributes(entityName)} 
         />
       </Box>
-      <TableContainer component={Paper} sx={{ marginTop: 2 }}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              {attributes.map((attr) => (
-                <TableCell key={attr.name}>{attr.name}</TableCell>
-              ))}
-              {attributes.length ? <TableCell>Actions</TableCell> : null}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {entries.length > 0 ? (
-              entries.map((entry) => (
-                <TableRow key={entry.id}>
-                  {attributes.map((attr) => (
-                    <TableCell key={attr.name}>{entry[attr.name]}</TableCell>
-                  ))}
-                  <TableCell sx={{display : "flex"}}>
-                    <IconButton color="primary"  onClick={() => handleEntryDialogOpen(entry)}>
-                      <Edit />
-                    </IconButton>
-                    <IconButton color="error" onClick={() => handleDelete(entry.id)}>
-                      <Delete />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
+      {loading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+          <CircularProgress />
+        </Box>
+      ) : (
+        <TableContainer component={Paper} sx={{ marginTop: 2 }}>
+          <Table>
+            <TableHead>
               <TableRow>
                 {attributes.map((attr) => (
-                  <TableCell key={attr.name}></TableCell>
+                  <TableCell key={attr.name}>{attr.name}</TableCell>
                 ))}
-                <TableCell></TableCell>
+                {attributes.length ? <TableCell>Actions</TableCell> : null}
               </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableHead>
+            <TableBody>
+              {entries.length > 0 ? (
+                entries.map((entry) => (
+                  <TableRow key={entry.id}>
+                    {attributes.map((attr) => (
+                      <TableCell key={attr.name}>{entry[attr.name]}</TableCell>
+                    ))}
+                    <TableCell sx={{display : "flex"}}>
+                      <IconButton color="primary" onClick={() => handleEntryDialogOpen(entry)}>
+                        <Edit />
+                      </IconButton>
+                      <IconButton color="error" onClick={() => handleDelete(entry.id)}>
+                        <Delete />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  {attributes.map((attr) => (
+                    <TableCell key={attr.name}></TableCell>
+                  ))}
+                  <TableCell></TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
 
       <AddEntry
         open={entryDialogOpen}
