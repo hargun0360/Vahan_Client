@@ -31,12 +31,17 @@ const AddAttribute = ({ entityName, onAttributeAdded }) => {
   };
 
   const handleSubmit = async () => {
-    await axios.post(`${BASE_URL}entities/add-attribute`, {
-      entityName,
-      attribute: { name, type, isRequired },
-    });
-    handleClose();
-    onAttributeAdded();
+    try{
+      await axios.post(`${BASE_URL}entities/add-attribute`, {
+        entityName,
+        attribute: { name, type, isRequired },
+      });
+      handleClose();
+      onAttributeAdded();
+    }catch(error){
+      console.log(error);
+    }
+  
   };
 
   return (
