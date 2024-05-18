@@ -53,9 +53,9 @@ const CreateEntity = () => {
         entityName,
         attributes,
       });
-      Swal.fire('Success', response.data.message, 'success');
+      Swal.fire('Success', response?.data?.message, 'success');
     } catch (error) {
-      Swal.fire('Error', error.response.data.message, 'error');
+      Swal.fire('Error', error.response?.data?.message, 'error');
     }
   };
 

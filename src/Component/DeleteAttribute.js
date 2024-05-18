@@ -31,7 +31,7 @@ const DeleteAttribute = ({ entityName, onAttributeDeleted }) => {
       setAttributeName("");
       onAttributeDeleted();
     } catch (error) {
-      alert(error.response.data.message);
+      alert(error?.response?.data?.message);
     }
   };
 

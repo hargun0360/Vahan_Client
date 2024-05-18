@@ -49,7 +49,7 @@ const UpdateAttribute = ({ entityName, onAttributeUpdated }) => {
       setNewIsRequired("YES");
       onAttributeUpdated();
     } catch (error) {
-      alert(error.response.data.message);
+      alert(error?.response?.data?.message);
     }
   };
 

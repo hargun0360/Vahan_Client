@@ -55,8 +55,8 @@ const ShowEntity = () => {
       const response = await axios.get(`${BASE_URL}${name}`, {
         signal: newAbortController.signal,
       });
-      setEntries(response.data.entries);
-      setAttributes(response.data.attributes);
+      setEntries(response?.data?.entries);
+      setAttributes(response?.data?.attributes);
       setLoading(false);
     } catch (error) {
       setLoading(false);
