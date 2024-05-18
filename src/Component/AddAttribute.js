@@ -41,7 +41,15 @@ const AddAttribute = ({ entityName, onAttributeAdded }) => {
 
   return (
     <>
-      <Button variant="contained" color="warning" onClick={handleOpen}>
+      <Button variant="contained"
+        color="warning"
+        onClick={handleOpen}
+        disabled={!entityName}
+        sx={{
+          backgroundColor: !entityName ? "#ccc" : "#ff9800",
+          color: "#fff",
+          "&:hover": { backgroundColor: !entityName ? "#ccc" : "#fb8c00" },
+        }}>
         Add Attribute
       </Button>
       <Dialog open={open} onClose={handleClose}>

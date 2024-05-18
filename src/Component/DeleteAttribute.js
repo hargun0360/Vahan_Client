@@ -37,7 +37,12 @@ const DeleteAttribute = ({ entityName, onAttributeDeleted }) => {
 
   return (
     <>
-      <Button variant="contained" color="error" onClick={handleOpen}>
+      <Button variant="contained" color="error" onClick={handleOpen} disabled={!entityName}
+        sx={{
+          backgroundColor: !entityName ? "#ccc" : "#f44336",
+          color: "#fff",
+          "&:hover": { backgroundColor: !entityName ? "#ccc" : "#d32f2f" },
+        }}>
         Delete Attribute
       </Button>
       <Dialog open={open} onClose={handleClose}>

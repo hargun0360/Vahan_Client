@@ -41,6 +41,8 @@ const ShowEntity = () => {
   const [currentEntry, setCurrentEntry] = useState(null);
   const [abortController, setAbortController] = useState(null);
 
+  const disableButtons = !entityName || attributes.length === 0;
+
   const fetchEntriesAndAttributes = async (name) => {
     if (abortController) {
       abortController.abort();
@@ -135,6 +137,12 @@ const ShowEntity = () => {
           variant="contained"
           color="primary"
           onClick={() => handleEntryDialogOpen()}
+          disabled={disableButtons}
+          sx={{
+            backgroundColor: disableButtons ? "#ccc" : "#3f51b5",
+            color: "#fff",
+            "&:hover": { backgroundColor: disableButtons ? "#ccc" : "#303f9f" },
+          }}
         >
           Add Entry
         </Button>

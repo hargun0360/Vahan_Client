@@ -55,7 +55,12 @@ const UpdateAttribute = ({ entityName, onAttributeUpdated }) => {
 
   return (
     <>
-      <Button variant="contained" color="success" onClick={handleOpen}>
+      <Button variant="contained" color="success" onClick={handleOpen}  disabled={!entityName}
+        sx={{
+          backgroundColor: !entityName ? "#ccc" : "#4caf50",
+          color: "#fff",
+          "&:hover": { backgroundColor: !entityName ? "#ccc" : "#388e3c" },
+        }}>
         Update Attribute
       </Button>
       <Dialog open={open} onClose={handleClose}>
