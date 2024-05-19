@@ -93,11 +93,11 @@ const UpdateAttribute = ({ entityName, onAttributeUpdated }) => {
               </Select>
             </FormControl>
             <FormControl fullWidth margin="normal">
-              <InputLabel>New Is Required</InputLabel>
+              <InputLabel>Is Required</InputLabel>
               <Select
                 value={newIsRequired}
                 onChange={(e) => setNewIsRequired(e.target.value)}
-                label="New Is Required"
+                label="Is Required"
               >
                 <MenuItem value="YES">YES</MenuItem>
                 <MenuItem value="NO">NO</MenuItem>

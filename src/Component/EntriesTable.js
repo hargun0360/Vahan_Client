@@ -12,10 +12,10 @@ import {
   TextField,
   Button,
   Box,
-  CircularProgress
+  CircularProgress,
 } from "@mui/material";
 import { Delete, Edit } from "@mui/icons-material";
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 import { BASE_URL } from "../constant";
 import AddEntry from "./AddEntry";
 import AddAttribute from "./AddAttribute";
@@ -55,11 +55,18 @@ const ShowEntity = () => {
       const response = await axios.get(`${BASE_URL}${name}`, {
         signal: newAbortController.signal,
       });
-      setEntries(response?.data?.entries);
-      setAttributes(response?.data?.attributes);
+      if (response.status === 200) {
+        setEntries(response.data.entries);
+        setAttributes(response.data.attributes);
+      } else {
+        setEntries([]);
+        setAttributes([]);
+      }
       setLoading(false);
     } catch (error) {
       setLoading(false);
+      setEntries([]);
+      setAttributes([]);
       if (axios.isCancel(error)) {
         console.log("Request canceled", error.message);
       }
@@ -79,33 +86,33 @@ const ShowEntity = () => {
 
   const handleDelete = async (id) => {
     const result = await Swal.fire({
-      title: 'Are you sure?',
-      text: 'Do you want to delete this entry?',
-      icon: 'warning',
+      title: "Are you sure?",
+      text: "Do you want to delete this entry?",
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'No, keep it'
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, keep it",
     });
 
     if (result.isConfirmed) {
       try {
         await axios.delete(`${BASE_URL}${entityName}/${id}`);
         fetchEntriesAndAttributes(entityName);
-        Swal.fire('Deleted!', 'Entry has been deleted.', 'success');
+        Swal.fire("Deleted!", "Entry has been deleted.", "success");
       } catch (error) {
-        Swal.fire('Error', 'Failed to delete entry', 'error');
+        Swal.fire("Error", "Failed to delete entry", "error");
       }
     }
   };
 
   const handleEntryDialogOpen = async (entry = null) => {
     const result = await Swal.fire({
-      title: 'Are you sure?',
-      text: !entry ?  'Do you want to add entry?' : 'Do you want to modify this entry?',
-      icon: 'warning',
+      title: "Are you sure?",
+      text: !entry ? "Do you want to add entry?" : "Do you want to modify this entry?",
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonText: !entry ? 'Yes, Add' : 'Yes, modify it!',
-      cancelButtonText: !entry ? 'No' : 'No, keep it'
+      confirmButtonText: !entry ? "Yes, Add" : "Yes, modify it!",
+      cancelButtonText: !entry ? "No" : "No, keep it",
     });
 
     if (result.isConfirmed) {
@@ -146,21 +153,21 @@ const ShowEntity = () => {
         >
           Add Entry
         </Button>
-        <AddAttribute 
-          entityName={entityName} 
-          onAttributeAdded={() => fetchEntriesAndAttributes(entityName)} 
+        <AddAttribute
+          entityName={entityName}
+          onAttributeAdded={() => fetchEntriesAndAttributes(entityName)}
         />
-        <DeleteAttribute 
-          entityName={entityName} 
-          onAttributeDeleted={() => fetchEntriesAndAttributes(entityName)} 
+        <DeleteAttribute
+          entityName={entityName}
+          onAttributeDeleted={() => fetchEntriesAndAttributes(entityName)}
         />
-        <UpdateAttribute 
-          entityName={entityName} 
-          onAttributeUpdated={() => fetchEntriesAndAttributes(entityName)} 
+        <UpdateAttribute
+          entityName={entityName}
+          onAttributeUpdated={() => fetchEntriesAndAttributes(entityName)}
         />
       </Box>
       {loading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
           <CircularProgress />
         </Box>
       ) : (
@@ -181,11 +188,17 @@ const ShowEntity = () => {
                     {attributes.map((attr) => (
                       <TableCell key={attr.name}>{entry[attr.name]}</TableCell>
                     ))}
-                    <TableCell sx={{display : "flex"}}>
-                      <IconButton color="primary" onClick={() => handleEntryDialogOpen(entry)}>
+                    <TableCell sx={{ display: "flex" }}>
+                      <IconButton
+                        color="primary"
+                        onClick={() => handleEntryDialogOpen(entry)}
+                      >
                         <Edit />
                       </IconButton>
-                      <IconButton color="error" onClick={() => handleDelete(entry.id)}>
+                      <IconButton
+                        color="error"
+                        onClick={() => handleDelete(entry.id)}
+                      >
                         <Delete />
                       </IconButton>
                     </TableCell>

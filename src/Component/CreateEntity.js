@@ -37,7 +37,7 @@ const CreateEntity = () => {
 
   const handleChangeAttribute = (index, field, value) => {
     const newAttributes = [...attributes];
-    newAttributes[index][field] = value;
+    newAttributes[index][field] = field === "name" ? value.trim() : value;
     setAttributes(newAttributes);
   };
 
@@ -55,7 +55,7 @@ const CreateEntity = () => {
       });
       Swal.fire('Success', response?.data?.message, 'success');
     } catch (error) {
-      Swal.fire('Error', error.response?.data?.message, 'error');
+      Swal.fire('Error',  'Something went wrong', 'error');
     }
   };
 
@@ -121,7 +121,7 @@ const CreateEntity = () => {
                   <MenuItem value="NO">NO</MenuItem>
                 </Select>
               </FormControl>
-              {index == 0 ? (
+              {index === 0 ? (
                 <IconButton
                   onClick={() => handleRemoveAttribute(index)}
                   color="secondary"
